@@ -1,38 +1,48 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const btnJira = document.getElementById('btnJira');
-    const btnJiraShort = document.getElementById('btnJiraShort');
     const btnSlack = document.getElementById('btnSlack');
     const btnSlackShort = document.getElementById('btnSlackShort');
+    const btnSlackIDOnly = document.getElementById('btnSlackIDOnly');
+    const btnBitBucketPR = document.getElementById('btnBitBucketPR');
 
     let currentTitle = '';
+    let currentID = '';
     let currentUrl = '';
+    let BBPRTitle = '';
 
     // Get the active tab
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+
         const activeTab = tabs[0];
         currentTitle = activeTab.title || '';
+        currentID = activeTab.url || '';
         currentUrl = activeTab.url || '';
+        BBRPRTitle = '';
+        chrome.tabs.sendMessage(tabs[0].id, {data: "hello"}, response => {
+            if (response) {
+            BBPRTitle = response;
+            }
+        });
     });
 
     // Button handlers
 
     // Jira (full)
-    btnJira.addEventListener('click', function () {
-        const safeTitle = sanitizeTitleForJira(currentTitle);
-        const jiraLink = `[${safeTitle}|${currentUrl}]`;
-        copyToClipboard(jiraLink, btnJira);
-    });
+    // btnJira.addEventListener('click', function () {
+    //     const safeTitle = sanitizeTitleForJira(currentTitle);
+    //     const jiraLink = `[${safeTitle}|${currentUrl}]`;
+    //     copyToClipboard(jiraLink, btnJira);
+    // });
 
-    // Jira Short
-    btnJiraShort.addEventListener('click', function () {
-        // Sanitize the original title
-        let safeTitle = sanitizeTitleForJira(currentTitle);
-        // Truncate (with "...")
-        safeTitle = shortifyTitle(safeTitle, 35);
-        // Build the link
-        const jiraLink = `[${safeTitle}|${currentUrl}]`;
-        copyToClipboard(jiraLink, btnJiraShort);
-    });
+    // // Jira Short
+    // btnJiraShort.addEventListener('click', function () {
+    //     // Sanitize the original title
+    //     let safeTitle = sanitizeTitleForJira(currentTitle);
+    //     // Truncate (with "...")
+    //     safeTitle = shortifyTitle(safeTitle, 35);
+    //     // Build the link
+    //     const jiraLink = `[${safeTitle}|${currentUrl}]`;
+    //     copyToClipboard(jiraLink, btnJiraShort);
+    // });
 
     // Slack (full)
     btnSlack.addEventListener('click', function () {
@@ -52,6 +62,22 @@ document.addEventListener('DOMContentLoaded', function () {
         copyToClipboard(slackLink, btnSlackShort);
     });
 
+    // Slack (ID Only)
+    btnSlackIDOnly.addEventListener('click', function () {
+        const safeID = sanitizeTitleForSlackIDOnly(currentID);
+        const slackLink = `[${safeID}](${currentUrl})`;
+        //test
+        copyToClipboard(slackLink, btnSlackIDOnly);
+    });
+    
+    //Bitbucket PR Copy URL (with title)
+    btnBitBucketPR.addEventListener('click', function () {
+        if (BBPRTitle) {
+            const slackLink = `[${BBPRTitle + ' PR'}](${currentUrl})`;
+            copyToClipboard(slackLink, btnBitBucketPR);
+        }
+    });
+    
 
     // Copy and feedback
     function copyToClipboard(text, button) {
@@ -84,16 +110,20 @@ document.addEventListener('DOMContentLoaded', function () {
         return title;
     }
 
-    // Functions for title sanitizing
-    function sanitizeTitleForJira(title) {
+    function sanitizeTitleForSlack(title) {
         return title
-            .replace(/[{}]/g, '')
-            .replace(/\|/g, '¦')
             .replace(/\[/g, '(')
-            .replace(/\]/g, ')');
+            .replace(/\]/g, ')')
+            .replace(/\(/g, '{')
+            .replace(/\)/g, '}');
     }
 
-    function sanitizeTitleForSlack(title) {
+    function sanitizeTitleForSlackIDOnly(title) {
+        return title
+            .replace('https://porchsoftware.atlassian.net/browse/', '');
+    }
+
+    function sanitizeTitleForBBPR(title) {
         return title
             .replace(/\[/g, '(')
             .replace(/\]/g, ')')
