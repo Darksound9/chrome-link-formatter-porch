@@ -26,24 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Button handlers
 
-    // Jira (full)
-    // btnJira.addEventListener('click', function () {
-    //     const safeTitle = sanitizeTitleForJira(currentTitle);
-    //     const jiraLink = `[${safeTitle}|${currentUrl}]`;
-    //     copyToClipboard(jiraLink, btnJira);
-    // });
-
-    // // Jira Short
-    // btnJiraShort.addEventListener('click', function () {
-    //     // Sanitize the original title
-    //     let safeTitle = sanitizeTitleForJira(currentTitle);
-    //     // Truncate (with "...")
-    //     safeTitle = shortifyTitle(safeTitle, 35);
-    //     // Build the link
-    //     const jiraLink = `[${safeTitle}|${currentUrl}]`;
-    //     copyToClipboard(jiraLink, btnJiraShort);
-    // });
-
     // Slack (full)
     btnSlack.addEventListener('click', function () {
         const safeTitle = sanitizeTitleForSlack(currentTitle);
@@ -121,13 +103,5 @@ document.addEventListener('DOMContentLoaded', function () {
     function sanitizeTitleForSlackIDOnly(title) {
         return title
             .replace('https://porchsoftware.atlassian.net/browse/', '');
-    }
-
-    function sanitizeTitleForBBPR(title) {
-        return title
-            .replace(/\[/g, '(')
-            .replace(/\]/g, ')')
-            .replace(/\(/g, '{')
-            .replace(/\)/g, '}');
     }
 });
