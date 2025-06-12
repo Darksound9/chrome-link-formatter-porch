@@ -1,5 +1,5 @@
 {
-  "name": "Dagan's Jira Formatter for Slack",
+  "name": "Porch Jira Formatter for Slack",
   "version": "1.1",
   "description": "An extension for copying Jira links in Slack formats",
   "manifest_version": 3,
